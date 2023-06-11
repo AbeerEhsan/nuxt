@@ -40,10 +40,6 @@ Nuxt 3 + Tailwind Starter Kit.
 
 - Try on [stackblitz](https://stackblitz.com/github/gravitano/nuxt3-tailwind-kit/tree/main)
 
-### Online Demo
-
-- Try [online demo](https://nuxt3-tailwind-kit.vercel.app/)
-
 ### GitHub Template
 
 [Create a repo from this template on GitHub.](https://github.com/gravitano/nuxt3-tailwind-kit/generate)
