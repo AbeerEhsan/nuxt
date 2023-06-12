@@ -8,20 +8,28 @@ const appConfig = useAppConfig()
       <div class="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
         <div v-if="appConfig.announcement.enabled" class="hidden sm:mb-8 sm:flex sm:justify-center">
           <div class="relative rounded-full py-1 px-3 text-sm leading-6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20">
-            {{  appConfig.announcement.message }}
-            <NuxtLink :to="appConfig.announcement.url" class="font-semibold text-indigo-600"><span class="absolute inset-0" aria-hidden="true" />Read more <span aria-hidden="true">&rarr;</span></NuxtLink>
+            {{ appConfig.announcement.message }}
+            <NuxtLink :to="appConfig.announcement.url" class="font-semibold text-indigo-600">
+              <span class="absolute inset-0" aria-hidden="true" />Read more <span aria-hidden="true">&rarr;</span>
+            </NuxtLink>
           </div>
         </div>
+        <!--                <iframe src="https://embed.lottiefiles.com/animation/99713"></iframe> -->
+        <!--        <iframe src="https://embed.lottiefiles.com/animation/34704"></iframe> -->
         <div class="text-center">
           <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-            {{  appConfig.title  }}
+            {{ appConfig.title }}
           </h1>
           <p class="mt-6 text-lg leading-8 text-gray-600">
             {{ appConfig.description }}
           </p>
           <div class="mt-10 flex items-center justify-center gap-x-6">
-            <NuxtLink to="/docs/getting-started/installation" class="rounded-md bg-indigo-600 px-3.5 py-1.5 text-base font-semibold leading-7 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Get started</NuxtLink>
-            <NuxtLink target="_blank" to="https://github.com/gravitano/nuxt3-tailwind-kit" class="text-base font-semibold leading-7 text-gray-900">View GitHub <span aria-hidden="true">→</span></NuxtLink>
+            <NuxtLink to="/docs/getting-started/installation" class="rounded-md bg-indigo-600 px-3.5 py-1.5 text-base font-semibold leading-7 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+              Get started
+            </NuxtLink>
+            <NuxtLink target="_blank" to="https://github.com/gravitano/nuxt3-tailwind-kit" class="text-base font-semibold leading-7 text-gray-900">
+              View GitHub <span aria-hidden="true">→</span>
+            </NuxtLink>
           </div>
         </div>
       </div>

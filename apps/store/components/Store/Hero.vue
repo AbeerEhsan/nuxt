@@ -6,9 +6,8 @@ function fadeSlideTo(target) {
 }
 
 function fadeSlideFrom(target) {
-  gsap.from(target, { opacity: 0.25, x: 300, yoyo: true, repeat: -1, duration: 2 })
+  gsap.from(target, { opacity: 0.25, y: 300, yoyo: true, repeat: -1, duration: 2 })
 }
-
 function fadeSlideFromTo(target) {
   gsap.fromTo(target, { opacity: 0.1, x: 300 }, { opacity: 1, x: 600, yoyo: true, repeat: -1, duration: 2 })
 }
@@ -26,7 +25,7 @@ onMounted(() => {
       <div class="relative mx-auto max-w-7xl px-4 sm:static sm:px-6 lg:px-8">
         <div class="sm:max-w-lg">
           <h1 data-aos="fade-center" class="font  text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-            Summer styles are finally here
+            <iframe src="https://embed.lottiefiles.com/animation/34704" />
           </h1>
           <p class="mt-4 text-xl text-gray-500">
             This year, our new summer collection will shelter you from the harsh elements of a world that doesn't care if you live or die.
@@ -44,8 +43,8 @@ onMounted(() => {
                     </div>
                     <div class="h-64 w-44 overflow-hidden rounded-lg">
                       <img
-                          src="https://tailwindui.com/img/ecommerce-images/home-page-03-hero-image-tile-02.jpg" alt=""
-                          class="box fadeSlideTo h-full w-full object-cover object-center"
+                        src="https://tailwindui.com/img/ecommerce-images/home-page-03-hero-image-tile-02.jpg" alt=""
+                        class="box fadeSlideTo h-full w-full object-cover object-center"
                       >
                     </div>
                   </div>
@@ -57,7 +56,7 @@ onMounted(() => {
                       <img src="https://tailwindui.com/img/ecommerce-images/home-page-03-hero-image-tile-04.jpg" alt="" class="h-full w-full object-cover object-center">
                     </div>
                     <div class="h-64 w-44 overflow-hidden rounded-lg">
-                      <img  src="https://tailwindui.com/img/ecommerce-images/home-page-03-hero-image-tile-05.jpg" alt="" class="box fadeSlideFromTo h-full w-full object-cover object-center">
+                      <img src="https://tailwindui.com/img/ecommerce-images/home-page-03-hero-image-tile-05.jpg" alt="" class="box fadeSlideFromTo h-full w-full object-cover object-center">
                     </div>
                   </div>
                   <div class="grid flex-shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8">
@@ -72,9 +71,9 @@ onMounted(() => {
               </div>
             </div>
 
-            <NuxtLink to="/store/products" class="inline-block rounded-md border border-transparent bg-indigo-600 py-3 px-8 text-center font-medium text-white hover:bg-indigo-700">
+            <button class="inline-block rounded-md border border-transparent bg-indigo-600 py-3 px-8 text-center font-medium text-white hover:bg-indigo-700">
               Shop Collection
-            </NuxtLink>
+            </button>
           </div>
         </div>
       </div>
@@ -82,5 +81,3 @@ onMounted(() => {
   </div>
 </template>
 
-<style scoped="">
-</style>

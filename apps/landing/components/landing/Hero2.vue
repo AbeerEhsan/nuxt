@@ -1,334 +1,49 @@
-<script>
-import gsap from 'gsap'
-
-export default {
-  mounted() {
-    let currentImg
-    const currentImgProps = { x: 0, y: 0 }
-    let isZooming = false
-    let column = -1
-    const mouse = { x: 0, y: 0 }
-    let delayedPlay
-
-    for (let i = 0; i < 12; i++) {
-      if (i % 4 == 0)
-        column++
-
-      const b = document.createElement('div')
-      this.$el.querySelector('.mainBoxes').appendChild(b)
-
-      gsap.set(b, {
-        attr: { id: `b${i}`, class: `photoBox pb-col${column}` },
-        backgroundImage: `url(https://assets.codepen.io/721952/${i}.jpg)`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        overflow: 'hidden',
-        x: [60, 280, 500][column],
-        width: 400,
-        height: 640,
-        borderRadius: 20,
-        scale: 0.5,
-        zIndex: 1,
-      })
-
-      b.tl = gsap
-        .timeline({ paused: true, repeat: -1 })
-        .fromTo(
-          b,
-          { y: [-575, 800, 800][column], rotation: -0.05 },
-          {
-            duration: [40, 35, 26][column],
-            y: [800, -575, -575][column],
-            rotation: 0.05,
-            ease: 'none',
-          },
-        )
-        .progress((i % 4) / 4)
-    }
-
-    function pauseBoxes(b) {
-      let classStr = 'pb-col0'
-      if ($(b).hasClass('pb-col1'))
-        classStr = 'pb-col1'
-      if ($(b).hasClass('pb-col2'))
-        classStr = 'pb-col2'
-      for (let i = 0; i < this.$el.querySelector('.mainBoxes').children().length; i++) {
-        var b = this.$el.querySelector('.mainBoxes').children()[i]
-        if ($(b).hasClass(classStr))
-          gsap.to(b.tl, { timeScale: 0, ease: 'sine' })
-      }
-    }
-
-    function playBoxes() {
-      for (let i = 0; i < this.$el.querySelector('.mainBoxes').children().length; i++) {
-        const tl = this.$el.querySelector('.mainBoxes').children()[i].tl
-        tl.play()
-        gsap.to(tl, {
-          duration: 0.4,
-          timeScale: 1,
-          ease: 'sine.in',
-          overwrite: true,
-        })
-      }
-    }
-
-    this.$nuxt.$on('nuxt:mounted', () => {
-      const _tl = gsap
-        .timeline({ onStart: playBoxes })
-        .set('.main', { perspective: 800 })
-        .set('.photoBox', { opacity: 1, cursor: 'pointer' })
-        .set('.mainBoxes', {
-          left: '75%',
-          xPercent: -50,
-          width: 1200,
-          rotationX: 14,
-          rotationY: -15,
-          rotationZ: 10,
-        })
-        .set('.mainClose', {
-          autoAlpha: 0,
-          width: 60,
-          height: 60,
-          left: -30,
-          top: -31,
-          pointerEvents: 'none',
-        })
-        .fromTo(
-          '.main',
-          { autoAlpha: 0 },
-          { duration: 0.6, ease: 'power2.inOut', autoAlpha: 1 },
-          0.2,
-        )
-
-      this.$el.querySelectorAll('.photoBox').forEach((el) => {
-        el.addEventListener('mouseenter', (e) => {
-          console.log($(e.currentTarget).hasClass('pb-col0'))
-          if (currentImg)
-            return
-          if (delayedPlay)
-            delayedPlay.kill()
-          pauseBoxes(e.currentTarget)
-          const _t = e.currentTarget
-          gsap.to('.photoBox', {
-            duration: 0.2,
-            overwrite: 'auto',
-            opacity(i, t) {
-              return t == _t ? 1 : 0.33
-            },
-          })
-          gsap.fromTo(
-            _t,
-            { zIndex: 100 },
-            { duration: 0.2, scale: 0.62, overwrite: 'auto', ease: 'power3' },
-          )
-        })
-
-        el.addEventListener('mouseleave', (e) => {
-          if (currentImg)
-            return
-          const _t = e.currentTarget
-
-          if (gsap.getProperty(_t, 'scale') > 0.62)
-            delayedPlay = gsap.delayedCall(0.3, playBoxes)
-          // to avoid jump, add delay when mouseout occurs as big image scales back down (not 100% reliable because the scale value sometimes evaluates too late)
-          else playBoxes()
-
-          gsap
-            .timeline()
-            .set(_t, { zIndex: 1 })
-            .to(_t, { duration: 0.3, scale: 0.5, overwrite: 'auto', ease: 'expo' }, 0)
-            .to('.photoBox', { duration: 0.5, opacity: 1, ease: 'power2.inOut' }, 0)
-        })
-
-        el.addEventListener('click', (e) => {
-          if (!isZooming) {
-            // only tween if photoBox isn't currently zooming
-
-            isZooming = true
-            gsap.delayedCall(0.8, () => {
-              isZooming = false
-            })
-
-            if (currentImg) {
-              gsap
-                .timeline({ defaults: { ease: 'expo.inOut' } })
-                .to('.mainClose', { duration: 0.1, autoAlpha: 0, overwrite: true }, 0)
-                .to(
-                  '.mainBoxes',
-                  {
-                    duration: 0.5,
-                    scale: 1,
-                    left: '75%',
-                    width: 1200,
-                    rotationX: 14,
-                    rotationY: -15,
-                    rotationZ: 10,
-                    overwrite: true,
-                  },
-                  0,
-                )
-                .to(
-                  '.photoBox',
-                  { duration: 0.6, opacity: 1, ease: 'power4.inOut' },
-                  0,
-                )
-                .to(
-                  currentImg,
-                  {
-                    duration: 0.6,
-                    width: 400,
-                    height: 640,
-                    borderRadius: 20,
-                    x: currentImgProps.x,
-                    y: currentImgProps.y,
-                    scale: 0.5,
-                    rotation: 0,
-                    zIndex: 1,
-                  },
-                  0,
-                )
-              // .add(playBoxes, 0.8)
-              currentImg = undefined
-            }
-            else {
-              pauseBoxes(e.currentTarget)
-
-              currentImg = e.currentTarget
-              currentImgProps.x = gsap.getProperty(currentImg, 'x')
-              currentImgProps.y = gsap.getProperty(currentImg, 'y')
-
-              gsap
-                .timeline({ defaults: { duration: 0.6, ease: 'expo.inOut' } })
-                .set(currentImg, { zIndex: 100 })
-                .fromTo(
-                  '.mainClose',
-                  { x: mouse.x, y: mouse.y, background: 'rgba(0,0,0,0)' },
-                  { autoAlpha: 1, duration: 0.3, ease: 'power3.inOut' },
-                  0,
-                )
-                .to('.photoBox', { opacity: 0 }, 0)
-                .to(
-                  currentImg,
-                  {
-                    width: '100%',
-                    height: '100%',
-                    borderRadius: 0,
-                    x: 0,
-                    top: 0,
-                    y: 0,
-                    scale: 1,
-                    opacity: 1,
-                  },
-                  0,
-                )
-                .to(
-                  '.mainBoxes',
-                  {
-                    duration: 0.5,
-                    left: '50%',
-                    width: '100%',
-                    rotationX: 0,
-                    rotationY: 0,
-                    rotationZ: 0,
-                  },
-                  0.15,
-                )
-                .to(
-                  '.mainBoxes',
-                  { duration: 5, scale: 1.06, rotation: 0.05, ease: 'none' },
-                  0.65,
-                )
-            }
-          }
-        })
-      })
-
-      if ('ontouchstart' in window) {
-        console.log('touch device!')
-        mouse.x = window.innerWidth - 50
-        mouse.y = 60
-      }
-      else {
-        this.$el.querySelector('.main').addEventListener('mousemove', (e) => {
-          mouse.x = e.x
-          mouse.y = e.layerY
-          if (currentImg) {
-            gsap.to('.mainClose', {
-              duration: 0.1,
-              x: mouse.x,
-              y: mouse.y,
-              overwrite: 'auto',
-            })
-          }
-        })
-      }
-    })
-  },
-}
+<script setup lang="ts">
+const appConfig = useAppConfig()
 </script>
 
 <template>
   <div>
-    <div class="main">
-      <div class="mainBoxes fs" />
-      <div class="mainClose">
-        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%" fill="none">
-          <circle cx="30" cy="30" r="30" fill="#000" opacity="0.4" />
-          <path d="M15,16L45,46 M45,16L15,46" stroke="#000" stroke-width="3.5" opacity="0.5" />
-          <path d="M15,15L45,45 M45,15L15,45" stroke="#fff" stroke-width="2" />
+    <div class="relative px-6 lg:px-8">
+      <div class="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
+        <div v-if="appConfig.announcement.enabled" class="hidden sm:mb-8 sm:flex sm:justify-center">
+          <div class="relative rounded-full py-1 px-3 text-sm leading-6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20">
+            {{ appConfig.announcement.message }}
+            <NuxtLink :to="appConfig.announcement.url" class="font-semibold text-indigo-600">
+              <span class="absolute inset-0" aria-hidden="true" />Read more <span aria-hidden="true">&rarr;</span>
+            </NuxtLink>
+          </div>
+        </div>
+<!--                <iframe src="https://embed.lottiefiles.com/animation/99713"></iframe>-->
+<!--        <iframe src="https://embed.lottiefiles.com/animation/34704"></iframe>-->
+        <div class="text-center">
+          <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
+            {{ appConfig.title }}
+          </h1>
+          <p class="mt-6 text-lg leading-8 text-gray-600">
+            {{ appConfig.description }}
+          </p>
+          <div class="mt-10 flex items-center justify-center gap-x-6">
+            <NuxtLink to="/docs/getting-started/installation" class="rounded-md bg-indigo-600 px-3.5 py-1.5 text-base font-semibold leading-7 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+              Get started
+            </NuxtLink>
+            <NuxtLink target="_blank" to="https://github.com/gravitano/nuxt3-tailwind-kit" class="text-base font-semibold leading-7 text-gray-900">
+              View GitHub <span aria-hidden="true">→</span>
+            </NuxtLink>
+          </div>
+        </div>
+      </div>
+      <div class="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]">
+        <svg class="relative left-[calc(50%+3rem)] h-[21.1875rem] max-w-none -translate-x-1/2 sm:left-[calc(50%+36rem)] sm:h-[42.375rem]" viewBox="0 0 1155 678" xmlns="http://www.w3.org/2000/svg">
+          <path fill="url(#ecb5b0c9-546c-4772-8c71-4d3f06d544bc)" fill-opacity=".3" d="M317.219 518.975L203.852 678 0 438.341l317.219 80.634 204.172-286.402c1.307 132.337 45.083 346.658 209.733 145.248C936.936 126.058 882.053-94.234 1031.02 41.331c119.18 108.451 130.68 295.337 121.53 375.223L855 299l21.173 362.054-558.954-142.079z" />
+          <defs>
+            <linearGradient id="ecb5b0c9-546c-4772-8c71-4d3f06d544bc" x1="1155.49" x2="-78.208" y1=".177" y2="474.645" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#9089FC" />
+              <stop offset="1" stop-color="#FF80B5" />
+            </linearGradient>
+          </defs>
         </svg>
       </div>
     </div>
   </div>
 </template>
-
-<template>
-  <div>
-    <div class="main">
-      <div class="mainBoxes fs"></div>
-      <div class="mainClose">
-        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%" fill="none">
-          <circle cx="30" cy="30" r="30" fill="#000" opacity="0.4" />
-          <path d="M15,16L45,46 M45,16L15,46" stroke="#000" stroke-width="3.5" opacity="0.5" />
-          <path d="M15,15L45,45 M45,15L15,45" stroke="#fff" stroke-width="2" />
-        </svg>
-      </div>
-    </div>
-  </div>
-</template>
-
-<style>
-body {
-  margin: 0;
-  font-family: "Work Sans", sans-serif;
-  background-color: #111;
-  color: #fff;
-  overflow: hidden;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.main {
-  position: relative;
-  width: 800px;
-  height: 640px;
-  transform-style: preserve-3d;
-}
-
-.mainBoxes {
-  position: absolute;
-  transform-style: preserve-3d;
-}
-
-.mainClose {
-  position: absolute;
-  width: 60px;
-  height: 60px;
-  top: -30px;
-  left: -30px;
-  z-index: 100;
-  cursor: pointer;
-}
-</style>
